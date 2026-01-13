@@ -1,0 +1,26 @@
+ ⛅️ wrangler 3.50.0 (update available 4.58.0)
+---------------------------------------------
+Getting User settings...
+👋 You are logged in with an OAuth Token, associated with the email medhaaraj@gmail.com!
+┌───────────────────────────────┬──────────────────────────────────┐
+│ Account Name                  │ Account ID                       │
+├───────────────────────────────┼──────────────────────────────────┤
+│ Medhaaraj@gmail.com's Account │ 97e25cd9dc831634be1e28d0cc8afe53 │
+└───────────────────────────────┴──────────────────────────────────┘
+🔓 Token Permissions: If scopes are missing, you may need to logout and re-login.
+Scope (Access)
+- account (read)
+- user (read)
+- workers (write)
+- workers_kv (write)
+- workers_routes (write)
+- workers_scripts (write)
+- workers_tail (read)
+- d1 (write)
+- pages (write)
+- zone (read)
+- ssl_certs (write)
+- constellation (write)
+- ai (write)
+- queues (write)
+- offline_access 

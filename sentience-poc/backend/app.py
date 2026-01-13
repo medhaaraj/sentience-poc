@@ -1,0 +1,212 @@
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime
+from typing import List
+
+from db import get_connection
+from detection import detect_tool
+from aggregation import aggregate_usage
+from mcp import list_tools, get_tool_details
+from models import TelemetryEvent
+
+# Initialize FastAPI application
+app = FastAPI(
+    title="Sentience POC API",
+    description="AI Usage Visibility and Governance Platform",
+    version="0.1.0"
+)
+
+# Enable CORS for frontend access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Dependency to get DB connection
+def get_db_conn():
+    conn = get_connection()
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+# -------------------------
+# HEALTH CHECK
+# -------------------------
+@app.get("/")
+def root():
+    """
+    Health check endpoint
+    Returns service status
+    """
+    return {
+        "status": "ok",
+        "service": "Sentience POC API",
+        "version": "0.1.0"
+    }
+
+
+# -------------------------
+# TELEMETRY INGESTION
+# -------------------------
+@app.post("/telemetry/ingest")
+def ingest(event: TelemetryEvent, conn = Depends(get_db_conn)):
+    """
+    Ingest telemetry event from SWG logs
+    """
+    cur = conn.cursor()
+    try:
+        # Run detection algorithm
+        tool_id, licensed, explanation = detect_tool(cur, event.domain)
+
+        # Store normalized event
+        cur.execute(
+            """
+            INSERT INTO ai_usage_events
+            (timestamp, user_id, tool_id, licensed, explanation)
+            VALUES (%s, %s, %s, %s, %s)
+            """,
+            (
+                datetime.utcnow(),
+                event.user,
+                tool_id,
+                licensed,
+                explanation
+            )
+        )
+        conn.commit()
+
+        return {
+            "status": "ok",
+            "tool_id": tool_id,
+            "licensed": licensed,
+            "explanation": explanation
+        }
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+
+
+# -------------------------
+# MCP QUERY ENDPOINTS
+# -------------------------
+@app.get("/mcp/tools")
+def mcp_tools(conn = Depends(get_db_conn)):
+    """
+    MCP Query: List all tools
+    """
+    cur = conn.cursor()
+    try:
+        return list_tools(cur)
+    finally:
+        cur.close()
+
+
+@app.get("/mcp/tools/{tool_id}")
+def mcp_tool_detail(tool_id: str, conn = Depends(get_db_conn)):
+    """
+    MCP Query: Get tool details
+    """
+    cur = conn.cursor()
+    try:
+        return get_tool_details(cur, tool_id)
+    finally:
+        cur.close()
+
+
+# -------------------------
+# STATISTICS
+# -------------------------
+@app.get("/stats")
+def get_stats(conn = Depends(get_db_conn)):
+    """
+    Get overall system statistics
+    """
+    cur = conn.cursor()
+    try:
+        # Total unique tools detected
+        cur.execute("SELECT COUNT(DISTINCT tool_id) FROM ai_usage_events")
+        total_tools = cur.fetchone()[0]
+        
+        # Total unique users
+        cur.execute("SELECT COUNT(DISTINCT user_id) FROM ai_usage_events")
+        total_users = cur.fetchone()[0]
+        
+        # Licensed vs shadow tools
+        cur.execute("""
+            SELECT 
+                COUNT(DISTINCT CASE WHEN licensed = true THEN tool_id END) as licensed,
+                COUNT(DISTINCT CASE WHEN licensed = false THEN tool_id END) as shadow
+            FROM ai_usage_events
+            WHERE tool_id != 'unknown'
+        """)
+        licensed, shadow = cur.fetchone()
+        
+        return {
+            "total_tools": total_tools,
+            "total_users": total_users,
+            "licensed_tools": licensed or 0,
+            "shadow_tools": shadow or 0
+        }
+    finally:
+        cur.close()
+
+
+# -------------------------
+# AGGREGATION
+# -------------------------
+@app.post("/aggregate")
+def run_aggregation(conn = Depends(get_db_conn)):
+    """
+    Trigger aggregation
+    """
+    cur = conn.cursor()
+    try:
+        aggregate_usage(cur)
+        conn.commit()
+        return {"status": "aggregation complete"}
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        cur.close()
+
+
+# -------------------------
+# DEBUG ENDPOINTS
+# -------------------------
+@app.get("/events/recent")
+def recent_events(limit: int = 50, conn = Depends(get_db_conn)):
+    """
+    Get recent AI usage events for debugging
+    
+    Args:
+        limit: Maximum number of events to return
+        
+    Returns:
+        list: Recent events with timestamps
+    """
+    cur = conn.cursor()
+    cur.execute("""
+        SELECT timestamp, user_id, tool_id, licensed, explanation
+        FROM ai_usage_events
+        ORDER BY timestamp DESC
+        LIMIT %s
+    """, (limit,))
+    
+    events = []
+    for row in cur.fetchall():
+        events.append({
+            "timestamp": row[0].isoformat(),
+            "user_id": row[1],
+            "tool_id": row[2],
+            "licensed": row[3],
+            "explanation": row[4]
+        })
+    
+    return events

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentience OS | AI Governance</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        void: '#050507',
+                        glass: 'rgba(20, 20, 30, 0.6)',
+                        neon: {
+                            blue: '#3b82f6',
+                            purple: '#a855f7',
+                            pink: '#ec4899'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 20s infinite ease-in-out',
+                        'scan': 'scan 4s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translate(0, 0)' },
+                            '33%': { transform: 'translate(30px, -50px)' },
+                            '66%': { transform: 'translate(-20px, 20px)' },
+                        },
+                        scan: {
+                            '0%': { backgroundPosition: '0% 0%' },
+                            '100%': { backgroundPosition: '0% 100%' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter + Orbitron for headers -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050507;
+            color: #e2e8f0;
+            overflow: hidden;
+            /* App-like feel */
+        }
+
+        .font-cyber {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Cinematic Background */
+        .bg-void-gradient {
+            background: radial-gradient(circle at 50% 0%, #1a1b26 0%, #050507 80%);
+        }
+
+        /* Orbs */
+        .bg-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .orb-1 {
+            top: -20%;
+            left: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: #3b82f6;
+        }
+
+        .orb-2 {
+            bottom: -20%;
+            right: -10%;
+            width: 60vw;
+            height: 60vw;
+            background: #7c3aed;
+            animation-delay: -5s;
+        }
+
+        /* Glassmorphism Pro */
+        .glass-panel {
+            background: rgba(20, 25, 40, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-panel:hover {
+            background: rgba(30, 35, 50, 0.7);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Scanline Effect for Login */
+        .scanline {
+            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%);
+            background-size: 100% 4px;
+            animation: scan 10s linear infinite;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Utility */
+        .text-glow {
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+
+<body class="bg-void-gradient h-screen w-screen flex flex-col relative text-slate-300">
+
+    <!-- Background Elements -->
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <!-- ==================== ACCESS PORTAL (LOGIN) ==================== -->
+    <div id="login-screen"
+        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl transition-all duration-1000">
+        <div class="absolute inset-0 scanline opacity-10 pointer-events-none"></div>
+
+        <div
+            class="relative w-full max-w-md p-8 glass-panel rounded-2xl border border-blue-500/20 shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+            <div class="flex justify-center mb-8">
+                <div
+                    class="w-16 h-16 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 animate-pulse-slow">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                </div>
+            </div>
+
+            <h1 class="text-3xl font-cyber text-center text-white mb-2 tracking-wider">SENTIENCE</h1>
+            <p class="text-center text-blue-400/80 text-xs uppercase tracking-[0.2em] mb-8 font-medium">AI Governance OS
+            </p>
+
+            <form onsubmit="handleLogin(event)" class="space-y-6">
+                <div class="space-y-1">
+                    <label class="text-xs text-slate-500 uppercase tracking-wider font-semibold ml-1">Identity</label>
+                    <input type="email" value="admin@sentience.ai"
+                        class="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-mono text-sm"
+                        placeholder="user@corp.net">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-xs text-slate-500 uppercase tracking-wider font-semibold ml-1">Access Key</label>
+                    <input type="password" value="password"
+                        class="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-mono text-sm"
+                        placeholder="••••••••">
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] uppercase text-xs tracking-widest">
+                    Initialize Session
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <p class="text-[10px] text-slate-600 font-mono">SECURE CONNECTION • 256-BIT ENCRYPTED</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MAIN DASHBOARD ==================== -->
+    <div id="app-shell" class="flex h-screen opacity-0 transition-opacity duration-1000 overflow-hidden hidden">
+
+        <!-- SIDEBAR -->
+        <aside class="w-20 lg:w-64 border-r border-white/5 bg-black/20 flex flex-col backdrop-blur-md z-40">
+            <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-white/5">
+                <div
+                    class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                </div>
+                <span
+                    class="ml-3 font-cyber font-bold text-lg text-white hidden lg:block tracking-wide">SENTIENCE</span>
+            </div>
+
+            <nav class="flex-1 py-8 space-y-2 px-3">
+                <a href="#"
+                    class="flex items-center gap-3 px-3 py-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 group transition-all">
+                    <svg class="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    <span class="hidden lg:block font-medium">Dashboard</span>
+                </a>
+                <a href="#analytics" onclick="scrollToElement('analytics-section')"
+                    class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                    <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span class="hidden lg:block font-medium">Analytics</span>
+                </a>
+                <a href="#" onclick="alert('System Configuration interface is locked in Demo Mode.')"
+                    class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                    <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="hidden lg:block font-medium">Settings</span>
+                </a>
+            </nav>
+
+            <div class="p-6 border-t border-white/5">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-orange-500"></div>
+                    <div class="hidden lg:block">
+                        <div class="text-sm font-medium text-white">Admin</div>
+                        <div class="text-xs text-slate-500">Security Lead</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- CONTENT AREA -->
+        <main class="flex-1 flex flex-col overflow-hidden relative">
+
+            <!-- HEADER -->
+            <header
+                class="h-20 border-b border-white/5 bg-black/20 backdrop-blur-sm flex items-center justify-between px-8 z-30">
+                <!-- Search -->
+                <div class="relative w-96">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search registry..."
+                        class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 focus:bg-slate-800 transition-all">
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div
+                        class="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full animate-pulse-slow cursor-default">
+                        <div class="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_10px_#22c55e]"></div>
+                        <span class="text-xs font-medium text-green-400">System Online</span>
+                    </div>
+                    <button onclick="simulateExport()"
+                        class="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-medium rounded-lg border border-white/10 transition-all">
+                        Export Report
+                    </button>
+                </div>
+            </header>
+
+            <!-- SCROLLABLE CONTENT -->
+            <div class="flex-1 overflow-y-auto p-8 space-y-8 pb-20">
+
+                <!-- STATS -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <!-- Total -->
+                    <div id="card-total" onclick="showStatDetails('total')"
+                        class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden ring-2 ring-blue-500 bg-blue-900/10">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all">
+                        </div>
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total AI Tools</h3>
+                        <div class="text-4xl font-cyber text-white mb-2" id="stat-total">--</div>
+                        <div
+                            class="text-xs text-blue-400 flex items-center group-hover:translate-x-1 transition-transform">
+                            View Registry →</div>
+                    </div>
+
+                    <!-- Licensed -->
+                    <div id="card-licensed" onclick="showStatDetails('licensed')"
+                        class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden opacity-70 hover:opacity-100 hover:scale-[1.02] transition-all">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition-all">
+                        </div>
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Licensed</h3>
+                        <div class="text-4xl font-cyber text-white mb-2" id="stat-licensed">--</div>
+                        <div class="text-xs text-green-400">Compliant Usage</div>
+                    </div>
+
+                    <!-- Shadow -->
+                    <div id="card-shadow" onclick="showStatDetails('shadow')"
+                        class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden opacity-70 hover:opacity-100 hover:scale-[1.02] transition-all">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/20 rounded-full blur-2xl group-hover:bg-orange-500/30 transition-all">
+                        </div>
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Shadow AI</h3>
+                        <div class="text-4xl font-cyber text-white mb-2" id="stat-shadow">--</div>
+                        <div class="text-xs text-orange-400">Requires Review</div>
+                    </div>
+
+                    <!-- Users -->
+                    <div id="card-users" onclick="showStatDetails('users')"
+                        class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden opacity-70 hover:opacity-100 hover:scale-[1.02] transition-all">
+                        <div
+                            class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-all">
+                        </div>
+                        <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Active Users</h3>
+                        <div class="text-4xl font-cyber text-white mb-2" id="stat-users">--</div>
+                        <div class="text-xs text-purple-400">High Velocity</div>
+                    </div>
+                </div>
+
+                <!-- MIDDLE SECTION: Charts & Feed -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="analytics-section">
+
+                    <!-- CHARTS -->
+                    <div class="lg:col-span-2 glass-panel rounded-2xl p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="w-1 h-6 bg-blue-500 rounded-full"></span>
+                                Traffic Analytics
+                            </h2>
+                            <span class="text-xs text-slate-500 uppercase">Live Data</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="h-64 relative cursor-pointer" title="Click slices to filter">
+                                <canvas id="complianceChart"></canvas>
+                            </div>
+                            <div class="h-64 relative">
+                                <canvas id="categoryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FEED -->
+                    <div class="glass-panel rounded-2xl p-6 flex flex-col h-[400px]">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                                <span class="relative flex h-3 w-3">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
+                                </span>
+                                Live Stream
+                            </h2>
+                        </div>
+                        <div id="activityFeed" class="flex-1 overflow-y-auto space-y-3 pr-2 scroll-smooth">
+                            <!-- Items Injected Here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TABLE -->
+                <div id="table-section" class="glass-panel rounded-2xl overflow-hidden">
+                    <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                        <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                            <span class="w-1 h-6 bg-purple-500 rounded-full"></span>
+                            Registry Database
+                        </h2>
+                        <div class="text-xs text-slate-500 font-mono" id="tableFilterStatus">VIEW: ALL</div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-white/5 text-slate-400 uppercase text-xs font-semibold tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-4">Tool Identity</th>
+                                    <th class="px-6 py-4">Vendor</th>
+                                    <th class="px-6 py-4">Category</th>
+                                    <th class="px-6 py-4 text-center">Protocol</th>
+                                    <th class="px-6 py-4 text-right">Users</th>
+                                </tr>
+                            </thead>
+                            <tbody id="toolsTable" class="divide-y divide-white/5">
+                                <!-- JS Injection -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ========= MODALS ========= -->
+
+    <!-- Tool Details Modal -->
+    <div id="modalOverlay"
+        class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] hidden flex items-center justify-center transition-all opacity-0">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-8 m-4 shadow-[0_0_50px_rgba(0,0,0,0.5)] transform scale-95 transition-all duration-300 border border-white/10"
+            id="modalContent">
+
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="text-3xl font-cyber text-white mb-1" id="modalTitle">--</h2>
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono"
+                            id="modalId">ID: --</span>
+                    </div>
+                </div>
+                <button onclick="closeModal()"
+                    class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                    <div class="text-xs text-slate-500 uppercase mb-1">Status</div>
+                    <div id="modalStatus" class="font-medium">--</div>
+                </div>
+                <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                    <div class="text-xs text-slate-500 uppercase mb-1">Total Events</div>
+                    <div id="modalEvents" class="text-xl font-mono text-white">--</div>
+                </div>
+            </div>
+
+            <!-- Mock Usage Graph -->
+            <div class="bg-slate-900/30 rounded-xl p-4 mb-6 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-t from-blue-500/10 to-transparent opacity-50"></div>
+                <div class="flex justify-between items-end h-24 gap-2 mb-2 relative z-10">
+                    <div class="w-full bg-blue-500/30 rounded-t h-[40%] hover:bg-blue-500/60 transition-colors"></div>
+                    <div class="w-full bg-blue-500/40 rounded-t h-[60%] hover:bg-blue-500/70 transition-colors"></div>
+                    <div class="w-full bg-blue-500/50 rounded-t h-[30%] hover:bg-blue-500/80 transition-colors"></div>
+                    <div class="w-full bg-blue-500/60 rounded-t h-[80%] hover:bg-blue-500/90 transition-colors"></div>
+                    <div class="w-full bg-blue-500/70 rounded-t h-[50%] hover:bg-blue-500 transition-colors"></div>
+                    <div class="w-full bg-blue-500/80 rounded-t h-[90%] hover:bg-blue-400 transition-colors"></div>
+                    <div class="w-full bg-blue-500 rounded-t h-[75%] hover:bg-blue-400 transition-colors"></div>
+                </div>
+                <div class="flex justify-between text-[10px] text-slate-600 font-mono uppercase">
+                    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                </div>
+            </div>
+
+            <button onclick="closeModal()"
+                class="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all uppercase tracking-widest text-xs">
+                Close Dossier
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed bottom-8 right-8 bg-slate-900/90 backdrop-blur border border-green-500/30 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-24 transition-transform duration-500 flex items-center gap-4 z-[70]">
+        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        <div>
+            <h4 class="font-bold text-sm">Report Generated</h4>
+            <p class="text-xs text-slate-400">Compliance_Q1_2026.pdf ready for download.</p>
+        </div>
+    </div>
+
+    <!-- LOGIC -->
+    <script>
+        const API_URL = 'http://127.0.0.1:8000';
+
+        // --- AUTHENTICATION ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+
+            // Loading Animation
+            btn.innerText = "AUTHENTICATING...";
+            btn.classList.add('opacity-75', 'cursor-wait');
+
+            setTimeout(() => {
+                btn.innerText = "ACCESS GRANTED";
+                btn.classList.remove('from-blue-600', 'to-indigo-600');
+                btn.classList.add('bg-green-600');
+
+                setTimeout(() => {
+                    const loginScreen = document.getElementById('login-screen');
+                    loginScreen.classList.add('opacity-0', 'scale-110');
+
+                    setTimeout(() => {
+                        loginScreen.style.display = 'none';
+                        const app = document.getElementById('app-shell');
+                        app.classList.remove('hidden');
+
+                        // Force reflow
+                        void app.offsetWidth;
+                        app.classList.remove('opacity-0');
+
+                        // Start polling
+                        startApp();
+                    }, 800);
+                }, 800);
+            }, 1000);
+        }
+
+        // --- CORE STATE ---
+        let charts = {};
+        let currentFilter = 'all';
+        let searchQuery = '';
+        let cachedTools = [];
+
+        function startApp() {
+            initCharts();
+            updateDashboard();
+            updateLiveFeed();
+            setInterval(updateDashboard, 5000);
+            setInterval(updateLiveFeed, 2000);
+        }
+
+        // --- INTERACTIVITY ---
+        function showStatDetails(type) {
+            currentFilter = type;
+            renderFilters();
+
+            // Scroll to table smoothly
+            document.getElementById('table-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            renderTable();
+        }
+
+        function scrollToElement(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function simulateExport() {
+            const toast = document.getElementById('toast');
+            toast.classList.remove('translate-y-24');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24');
+            }, 3500);
+        }
+
+        function renderFilters() {
+            // Visual Update for Cards
+            ['total', 'licensed', 'shadow', 'users'].forEach(t => {
+                const card = document.getElementById(`card-${t}`);
+                if (t === currentFilter) {
+                    card.classList.remove('opacity-70');
+                    card.classList.add('ring-2', 'ring-blue-500', 'bg-blue-900/20');
+                } else {
+                    card.classList.add('opacity-70');
+                    card.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-900/20');
+                }
+            });
+
+            // Update Text Label
+            const label = document.getElementById('tableFilterStatus');
+            label.innerText = `VIEW: ${currentFilter.toUpperCase()}`;
+
+            renderTable();
+        }
+
+        // --- DATA VISUALIZATION ---
+        function initCharts() {
+            Chart.defaults.color = '#64748b';
+            Chart.defaults.font.family = 'Inter';
+
+            // Compliance Pie
+            const ctx1 = document.getElementById('complianceChart').getContext('2d');
+            charts.compliance = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Licensed', 'Shadow AI'],
+                    datasets: [{
+                        data: [1, 1], // Placeholder
+                        backgroundColor: ['#22c55e', '#f97316'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 8, color: '#94a3b8' } }
+                    },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = charts.compliance.data.labels[index];
+                            if (label === 'Licensed') showStatDetails('licensed');
+                            if (label === 'Shadow AI') showStatDetails('shadow');
+                        }
+                    }
+                }
+            });
+
+            // Category Bar
+            const ctx2 = document.getElementById('categoryChart').getContext('2d');
+            charts.category = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Users',
+                        data: [],
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4,
+                        maxBarThickness: 30
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        async function updateDashboard() {
+            try {
+                // 1. Fetch Data
+                const [toolsRes, statsRes] = await Promise.all([
+                    fetch(`${API_URL}/mcp/tools`),
+                    fetch(`${API_URL}/stats`)
+                ]);
+                cachedTools = await toolsRes.json();
+                const stats = await statsRes.json();
+
+                // 2. Update Stats Text
+                animateValue('stat-total', stats.total_tools);
+                animateValue('stat-licensed', stats.licensed_tools);
+                animateValue('stat-shadow', stats.shadow_tools);
+                animateValue('stat-users', stats.total_users);
+
+                // 3. Update Charts
+                charts.compliance.data.datasets[0].data = [stats.licensed_tools, stats.shadow_tools];
+                charts.compliance.update();
+
+                const categories = {};
+                cachedTools.forEach(t => categories[t.category] = (categories[t.category] || 0) + t.users);
+                charts.category.data.labels = Object.keys(categories).slice(0, 5);
+                charts.category.data.datasets[0].data = Object.values(categories).slice(0, 5);
+                charts.category.update();
+
+                // 4. Update Table
+                renderTable();
+
+            } catch (e) {
+                console.error("Sync Error", e);
+            }
+        }
+
+        function renderTable() {
+            let filtered = cachedTools;
+
+            // Type Filter
+            if (currentFilter === 'licensed') filtered = filtered.filter(t => t.licensed);
+            if (currentFilter === 'shadow') filtered = filtered.filter(t => !t.licensed);
+
+            // Search Filter
+            if (searchQuery) {
+                filtered = filtered.filter(t =>
+                    t.name?.toLowerCase().includes(searchQuery) ||
+                    t.tool_id.toLowerCase().includes(searchQuery) ||
+                    t.vendor?.toLowerCase().includes(searchQuery)
+                );
+            }
+
+            const tbody = document.getElementById('toolsTable');
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-mono text-xs uppercase tracking-widest">No signals detected</td></tr>`;
+            } else {
+                tbody.innerHTML = filtered.map((t, idx) => `
+                    <tr onclick="openToolModal('${t.tool_id}')" class="group hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center ${t.licensed ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}">
+                                    ${t.licensed ?
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' :
+                        '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856"/></svg>'}
+                                </div>
+                                <div>
+                                    <div class="font-bold text-white group-hover:text-blue-400 transition-colors">${t.name || t.tool_id}</div>
+                                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">${t.tool_id}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-400">${t.vendor || 'Unknown'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] bg-slate-800 text-slate-300 border border-slate-700 font-mono uppercase">${t.category || 'General'}</span></td>
+                        <td class="px-6 py-4 text-center">
+                            ${t.licensed ?
+                        '<span class="text-[10px] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase tracking-wide">Approved</span>' :
+                        '<span class="text-[10px] font-bold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20 uppercase tracking-wide">Review</span>'}
+                        </td>
+                        <td class="px-6 py-4 text-right font-mono text-slate-300">${t.users}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        async function updateLiveFeed() {
+            try {
+                const res = await fetch(`${API_URL}/events/recent?limit=20`);
+                if (!res.ok) return;
+                const events = await res.json();
+
+                const feed = document.getElementById('activityFeed');
+                feed.innerHTML = events.map(e => `
+                    <div onclick="openToolModal('${e.tool_id}')" class="flex items-start gap-4 p-3 rounded-xl bg-slate-800/30 hover:bg-slate-700/50 cursor-pointer transition-all border border-white/5 hover:border-blue-500/30 group">
+                        <div class="mt-1 relative">
+                            <span class="block w-2 h-2 rounded-full ${e.licensed ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-orange-500 shadow-[0_0_8px_#f97316]'}"></span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start">
+                                <p class="text-sm font-bold text-slate-200 group-hover:text-blue-400 truncate transition-colors">${e.tool_id}</p>
+                                <span class="text-[10px] font-mono text-slate-500">${new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                            </div>
+                            <p class="text-xs text-slate-500 truncate mt-0.5">User: <span class="text-slate-400 font-mono">${e.user_id}</span></p>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) { console.error(e); }
+        }
+
+        // --- ANIMATION UTILS ---
+        function animateValue(id, value) {
+            const el = document.getElementById(id);
+            if (el.innerText === '--' || parseInt(el.innerText) !== value) {
+                el.innerText = value; // Simple update, could add counting animation if needed
+            }
+        }
+
+        // --- MODAL ---
+        async function openToolModal(toolId) {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+
+            overlay.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition
+            setTimeout(() => {
+                overlay.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            }, 10);
+
+            try {
+                const res = await fetch(`${API_URL}/mcp/tools/${toolId}`);
+                const data = await res.json();
+
+                document.getElementById('modalTitle').innerText = data.name || toolId;
+                document.getElementById('modalId').innerText = `ID: ${toolId}`;
+                document.getElementById('modalStatus').innerHTML = data.licensed ?
+                    '<span class="text-green-400 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-green-500"></div> Authorized</span>' :
+                    '<span class="text-orange-400 flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-orange-500"></div> Unauthorized</span>';
+                document.getElementById('modalEvents').innerText = data.total_events || 0;
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+
+            overlay.classList.add('opacity-0');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-95');
+
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Node
+node_modules/
+dist/
+npm-debug.log
+
+# Cloudflare
+.wrangler/
+
+# System
+.DS_Store
+Thumbs.db
+
+# Project Specific
+telemetry/*.jsonl
+*.log
+sentience-poc/telemetry/swg_logs.jsonl

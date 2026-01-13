@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: sentience-db
+    environment:
+      POSTGRES_DB: sentience
+      POSTGRES_USER: sentience
+      POSTGRES_PASSWORD: sentience
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U sentience" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sentience-network
+
+  backend:
+    build: ./backend
+    container_name: sentience-backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=db
+    networks:
+      - sentience-network
+
+  frontend:
+    image: nginx:alpine
+    container_name: sentience-frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+    depends_on:
+      - backend
+    networks:
+      - sentience-network
+
+volumes:
+  postgres_data:
+
+
+networks:
+  sentience-network:
+    driver: bridge

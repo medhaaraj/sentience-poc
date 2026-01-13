@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+"""
+Sentience POC - Log Ingestion Script
+Ingests simulated SWG logs into the backend
+"""
+
+import json
+import requests
+import time
+import sys
+
+BACKEND_URL = "http://localhost:8000"
+LOG_FILE = "telemetry/swg_logs.jsonl"
+
+def wait_for_backend():
+    """Wait for backend API to be ready"""
+    print("🔄 Waiting for backend to be ready...")
+    max_retries = 30
+    
+    for i in range(max_retries):
+        try:
+            response = requests.get(f"{BACKEND_URL}/", timeout=2)
+            if response.status_code == 200:
+                print("✅ Backend is ready")
+                return True
+        except:
+            pass
+        
+        if i < max_retries - 1:
+            print(f"   Waiting... ({i+1}/{max_retries})")
+            time.sleep(2)
+    
+    print("❌ Backend not available after 60 seconds")
+    return False
+
+def ingest_logs():
+    """Ingest all logs from JSONL file into backend"""
+    print(f"📥 Starting log ingestion from {LOG_FILE}")
+    print()
+    
+    # Check if log file exists
+    try:
+        with open(LOG_FILE, "r") as f:
+            pass
+    except FileNotFoundError:
+        print(f"❌ Error: {LOG_FILE} not found")
+        print("   Run: python scripts/generate_logs.py")
+        return
+    
+    ingested = 0
+    errors = 0
+    start_time = time.time()
+    
+    # Read and ingest each log entry
+    with open(LOG_FILE, "r") as f:
+        for line_num, line in enumerate(f, 1):
+            try:
+                log = json.loads(line.strip())
+                
+                # POST to ingestion endpoint
+                response = requests.post(
+                    f"{BACKEND_URL}/telemetry/ingest",
+                    json={"user": log["user"], "domain": log["domain"]},
+                    timeout=5
+                )
+                
+                if response.status_code == 200:
+                    ingested += 1
+                    # Progress indicator every 20 logs
+                    if ingested % 20 == 0:
+                        print(f"   ✓ Ingested {ingested} logs...")
+                else:
+                    errors += 1
+                    print(f"   ⚠️  Line {line_num}: HTTP {response.status_code}")
+                    
+            except json.JSONDecodeError:
+                errors += 1
+                print(f"   ⚠️  Line {line_num}: Invalid JSON")
+            except requests.exceptions.RequestException as e:
+                errors += 1
+                print(f"   ⚠️  Line {line_num}: Network error - {e}")
+    
+    elapsed = time.time() - start_time
+    
+    # Print summary
+    print()
+    print("="*50)
+    print(f"✅ Ingestion Complete")
+    print(f"   ✓ Successfully ingested: {ingested}")
+    print(f"   ✗ Errors: {errors}")
+    print(f"   ⏱️  Time elapsed: {elapsed:.1f}s")
+    print(f"   📊 Rate: {ingested/elapsed:.1f} logs/sec")
+    print("="*50)
+    print()
+    
+    # Trigger aggregation
+    if ingested > 0:
+        print("🔄 Triggering aggregation...")
+        try:
+            response = requests.post(f"{BACKEND_URL}/aggregate", timeout=10)
+            if response.status_code == 200:
+                print("✅ Aggregation complete")
+            else:
+                print(f"⚠️  Aggregation failed: HTTP {response.status_code}")
+        except requests.exceptions.RequestException as e:
+            print(f"⚠️  Aggregation error: {e}")
+    
+    print()
+    print("🎉 All done! View dashboard at: http://localhost:3000")
+
+if __name__ == "__main__":
+    # Wait for backend
+    if not wait_for_backend():
+        print("\n💡 Tip: Make sure backend is running:")
+        print("   docker-compose up -d")
+        sys.exit(1)
+    
+    print()
+    
+    # Ingest logs
+    ingest_logs()
