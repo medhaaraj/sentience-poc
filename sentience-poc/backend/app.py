@@ -157,6 +157,85 @@ def get_stats(conn = Depends(get_db_conn)):
         cur.close()
 
 
+@app.get("/stats/trends")
+def get_usage_trends(conn = Depends(get_db_conn)):
+    """
+    Get hourly usage volume for the last 24 hours
+    """
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT 
+                date_trunc('hour', timestamp) as bucket,
+                COUNT(*)
+            FROM ai_usage_events
+            WHERE timestamp >= NOW() - INTERVAL '24 hours'
+            GROUP BY bucket
+            ORDER BY bucket ASC
+        """)
+        
+        # Format for frontend
+        results = []
+        for row in cur.fetchall():
+            # Append Z to indicate UTC
+            results.append({"time": row[0].isoformat() + "Z", "count": row[1]})
+            
+        return results
+    finally:
+        cur.close()
+
+
+@app.get("/stats/top_users")
+def get_top_users(limit: int = 5, conn = Depends(get_db_conn)):
+    """
+    Get top users by total events
+    """
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT user_id, COUNT(*) as events
+            FROM ai_usage_events
+            GROUP BY user_id
+            ORDER BY events DESC
+            LIMIT %s
+        """, (limit,))
+        
+        return [{"user": row[0], "events": row[1]} for row in cur.fetchall()]
+    finally:
+        cur.close()
+        
+        
+@app.get("/stats/risk")
+def get_risk_score(conn = Depends(get_db_conn)):
+    """
+    Get risk breakdown (Shadow AI volume vs Licensed)
+    """
+    cur = conn.cursor()
+    try:
+        cur.execute("""
+            SELECT 
+                COUNT(*) FILTER (WHERE licensed=false) as shadow_events,
+                COUNT(*) FILTER (WHERE licensed=true) as licensed_events,
+                COUNT(*) as total
+            FROM ai_usage_events
+            WHERE timestamp >= NOW() - INTERVAL '7 days'
+        """)
+        row = cur.fetchone()
+        shadow_events = row[0] or 0
+        total = row[2] or 1
+        
+        # Simple risk score: percentage of shadow events
+        risk_score = int((shadow_events / total) * 100) if total > 0 else 0
+        
+        return {
+            "risk_score": risk_score, 
+            "shadow_events": shadow_events,
+            "licensed_events": row[1] or 0
+        }
+    finally:
+        cur.close()
+
+
 # -------------------------
 # AGGREGATION
 # -------------------------
