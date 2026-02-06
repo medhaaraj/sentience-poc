@@ -13,106 +13,57 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
-                        void: '#050507',
-                        glass: 'rgba(20, 20, 30, 0.6)',
-                        neon: {
-                            blue: '#3b82f6',
-                            purple: '#a855f7',
-                            pink: '#ec4899'
+                        stone: {
+                            50: '#FDFCF8',  // Canvas
+                            100: '#F5F5F0', // Surface
+                            200: '#E6E4DD', // Border
+                            300: '#D6D3C8', // Border Darker
+                            700: '#44403C', // Ink
+                            800: '#292524', // Heading
+                            900: '#1C1917', // Black
+                        },
+                        earth: {
+                            600: '#855C42', // Primary
+                            700: '#704B35', // Primary Hover
                         }
                     },
                     animation: {
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 20s infinite ease-in-out',
-                        'scan': 'scan 4s linear infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translate(0, 0)' },
-                            '33%': { transform: 'translate(30px, -50px)' },
-                            '66%': { transform: 'translate(-20px, 20px)' },
-                        },
-                        scan: {
-                            '0%': { backgroundPosition: '0% 0%' },
-                            '100%': { backgroundPosition: '0% 100%' },
-                        }
                     }
                 }
             }
         }
     </script>
-    <!-- Google Fonts: Inter + Orbitron for headers -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700&display=swap"
-        rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #050507;
-            color: #e2e8f0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #FDFCF8;
+            color: #44403C;
             overflow: hidden;
-            /* App-like feel */
         }
 
         .font-cyber {
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* Cinematic Background */
-        .bg-void-gradient {
-            background: radial-gradient(circle at 50% 0%, #1a1b26 0%, #050507 80%);
-        }
-
-        /* Orbs */
-        .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            z-index: -1;
-            opacity: 0.3;
-            animation: float 20s infinite ease-in-out;
-        }
-
-        .orb-1 {
-            top: -20%;
-            left: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: #3b82f6;
-        }
-
-        .orb-2 {
-            bottom: -20%;
-            right: -10%;
-            width: 60vw;
-            height: 60vw;
-            background: #7c3aed;
-            animation-delay: -5s;
-        }
-
-        /* Glassmorphism Pro */
+        /* Glassmorphism Pro - Warm */
         .glass-panel {
-            background: rgba(20, 25, 40, 0.6);
+            background: rgba(255, 255, 250, 0.6);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(230, 228, 221, 0.6);
+            box-shadow: 0 4px 6px -1px rgba(68, 64, 60, 0.05), 0 2px 4px -1px rgba(68, 64, 60, 0.03);
         }
 
         .glass-panel:hover {
-            background: rgba(30, 35, 50, 0.7);
-            border-color: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
-        }
-
-        /* Scanline Effect for Login */
-        .scanline {
-            background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 51%);
-            background-size: 100% 4px;
-            animation: scan 10s linear infinite;
+            background: rgba(255, 255, 252, 0.8);
+            border-color: rgba(133, 92, 66, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(68, 64, 60, 0.08), 0 4px 6px -2px rgba(68, 64, 60, 0.04);
         }
 
         /* Scrollbar */
@@ -125,37 +76,30 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: #D6D3C8;
             border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-
-        /* Utility */
-        .text-glow {
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            background: #A8A29E;
         }
     </style>
 </head>
 
-<body class="bg-void-gradient h-screen w-screen flex flex-col relative text-slate-300">
+<body class="bg-stone-50 h-screen w-screen flex flex-col relative text-stone-700">
 
-    <!-- Background Elements -->
-    <div class="bg-orb orb-1"></div>
-    <div class="bg-orb orb-2"></div>
+    <!-- Background Elements (Minimal) -->
+    <!-- Removed Orbs for cleaner look as requested -->
 
     <!-- ==================== ACCESS PORTAL (LOGIN) ==================== -->
     <div id="login-screen"
-        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-xl transition-all duration-1000">
-        <div class="absolute inset-0 scanline opacity-10 pointer-events-none"></div>
+        class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/90 backdrop-blur-xl transition-all duration-1000">
+        <div class="absolute inset-0 scanline opacity-30 pointer-events-none"></div>
 
-        <div
-            class="relative w-full max-w-md p-8 glass-panel rounded-2xl border border-blue-500/20 shadow-[0_0_50px_rgba(59,130,246,0.1)]">
+        <div class="relative w-full max-w-md p-8 glass-panel rounded-2xl border border-stone-200 shadow-xl">
             <div class="flex justify-center mb-8">
                 <div
-                    class="w-16 h-16 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20 animate-pulse-slow">
+                    class="w-16 h-16 rounded-xl bg-stone-800 flex items-center justify-center shadow-lg shadow-stone-500/20">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
@@ -169,21 +113,21 @@
 
             <form onsubmit="handleLogin(event)" class="space-y-6">
                 <div class="space-y-1">
-                    <label class="text-xs text-slate-500 uppercase tracking-wider font-semibold ml-1">Identity</label>
+                    <label class="text-xs text-stone-500 uppercase tracking-wider font-semibold ml-1">Identity</label>
                     <input type="email" value="admin@sentience.ai"
-                        class="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-mono text-sm"
+                        class="w-full bg-white border border-stone-200 rounded-lg px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500/50 transition-all font-mono text-sm shadow-sm"
                         placeholder="user@corp.net">
                 </div>
 
                 <div class="space-y-1">
-                    <label class="text-xs text-slate-500 uppercase tracking-wider font-semibold ml-1">Access Key</label>
+                    <label class="text-xs text-stone-500 uppercase tracking-wider font-semibold ml-1">Access Key</label>
                     <input type="password" value="password"
-                        class="w-full bg-slate-900/50 border border-slate-700/50 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/50 transition-all font-mono text-sm"
+                        class="w-full bg-white border border-stone-200 rounded-lg px-4 py-3 text-stone-900 focus:outline-none focus:border-stone-500 focus:ring-1 focus:ring-stone-500/50 transition-all font-mono text-sm shadow-sm"
                         placeholder="••••••••">
                 </div>
 
                 <button type="submit"
-                    class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-blue-500/25 transition-all transform hover:scale-[1.02] active:scale-[0.98] uppercase text-xs tracking-widest">
+                    class="w-full bg-earth-600 hover:bg-earth-700 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-stone-500/10 transition-all transform hover:scale-[1.02] active:scale-[0.98] uppercase text-xs tracking-widest">
                     Initialize Session
                 </button>
             </form>
@@ -199,22 +143,21 @@
     <div id="app-shell" class="flex h-screen opacity-0 transition-opacity duration-1000 overflow-hidden hidden">
 
         <!-- SIDEBAR -->
-        <aside class="w-20 lg:w-64 border-r border-white/5 bg-black/20 flex flex-col backdrop-blur-md z-40">
-            <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-white/5">
-                <div
-                    class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
-                    <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <aside class="w-20 lg:w-64 border-r border-stone-200 bg-white/60 flex flex-col backdrop-blur-md z-40">
+            <div class="h-20 flex items-center justify-center lg:justify-start lg:px-6 border-b border-stone-200">
+                <div class="w-8 h-8 rounded bg-stone-800 flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-stone-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                 </div>
                 <span
-                    class="ml-3 font-cyber font-bold text-lg text-white hidden lg:block tracking-wide">SENTIENCE</span>
+                    class="ml-3 font-cyber font-bold text-lg text-stone-800 hidden lg:block tracking-wide">SENTIENCE</span>
             </div>
 
             <nav class="flex-1 py-8 space-y-2 px-3">
                 <a href="#" onclick="switchView('dashboard')"
-                    class="flex items-center gap-3 px-3 py-3 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20 group transition-all">
+                    class="flex items-center gap-3 px-3 py-3 bg-stone-100 text-earth-600 rounded-xl border border-stone-200 group transition-all">
                     <svg class="w-6 h-6 shrink-0 group-hover:scale-110 transition-transform" fill="none"
                         viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -223,15 +166,31 @@
                     <span class="hidden lg:block font-medium">Dashboard</span>
                 </a>
                 <a href="#analytics" onclick="switchView('analytics')"
-                    class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                    class="flex items-center gap-3 px-3 py-3 text-stone-500 hover:text-earth-600 hover:bg-stone-50 rounded-xl transition-all">
                     <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     <span class="hidden lg:block font-medium">Analytics</span>
                 </a>
-                <a href="#" onclick="switchView('settings')" id="nav-settings"
-                    class="flex items-center gap-3 px-3 py-3 text-slate-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                <a href="#registry" onclick="switchView('registry')" id="nav-registry"
+                    class="flex items-center gap-3 px-3 py-3 text-stone-500 hover:text-earth-600 hover:bg-stone-50 rounded-xl transition-all">
+                    <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                    </svg>
+                    <span class="hidden lg:block font-medium">Tool Registry</span>
+                </a>
+                <a href="#agent" onclick="switchView('agent')" id="nav-agent"
+                    class="flex items-center gap-3 px-3 py-3 text-stone-500 hover:text-earth-600 hover:bg-stone-50 rounded-xl transition-all">
+                    <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <span class="hidden lg:block font-medium">AI Agent</span>
+                </a>
+                <a href="#settings" onclick="switchView('settings')" id="nav-settings"
+                    class="flex items-center gap-3 px-3 py-3 text-stone-500 hover:text-earth-600 hover:bg-stone-50 rounded-xl transition-all">
                     <svg class="w-6 h-6 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -242,12 +201,12 @@
                 </a>
             </nav>
 
-            <div class="p-6 border-t border-white/5">
+            <div class="p-6 border-t border-stone-200">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-r from-pink-500 to-orange-500"></div>
+                    <div class="w-8 h-8 rounded-full bg-stone-400"></div>
                     <div class="hidden lg:block">
-                        <div class="text-sm font-medium text-white">Admin</div>
-                        <div class="text-xs text-slate-500">Security Lead</div>
+                        <div class="text-sm font-medium text-stone-800">Admin</div>
+                        <div class="text-xs text-stone-500">Security Lead</div>
                     </div>
                 </div>
             </div>
@@ -258,16 +217,16 @@
 
             <!-- HEADER -->
             <header
-                class="h-20 border-b border-white/5 bg-black/20 backdrop-blur-sm flex items-center justify-between px-8 z-30">
+                class="h-20 border-b border-stone-200 bg-white/60 backdrop-blur-sm flex items-center justify-between px-8 z-30">
                 <!-- Search -->
                 <div class="relative w-96">
-                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none"
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                     <input type="text" id="searchInput" onkeyup="handleSearch()" placeholder="Search registry..."
-                        class="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl pl-10 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500 focus:bg-slate-800 transition-all">
+                        class="w-full bg-white border border-stone-200 rounded-xl pl-10 pr-4 py-2 text-sm text-stone-800 focus:outline-none focus:border-earth-600 focus:bg-white transition-all shadow-sm">
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -277,7 +236,7 @@
                         <span class="text-xs font-medium text-green-400">System Online</span>
                     </div>
                     <button onclick="simulateExport()"
-                        class="px-4 py-2 bg-white/5 hover:bg-white/10 text-slate-300 text-sm font-medium rounded-lg border border-white/10 transition-all">
+                        class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-600 text-sm font-medium rounded-lg border border-slate-200 transition-all shadow-sm">
                         Export Report
                     </button>
                 </div>
@@ -293,15 +252,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <!-- Total -->
                         <div id="card-total" onclick="showStatDetails('total')"
-                            class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden ring-2 ring-blue-500 bg-blue-900/10">
+                            class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden ring-2 ring-stone-400 bg-stone-200/50">
                             <div
-                                class="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/20 rounded-full blur-2xl group-hover:bg-blue-500/30 transition-all">
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-stone-400/20 rounded-full blur-2xl group-hover:bg-earth-600/10 transition-all">
                             </div>
-                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Total AI Tools
+                            <h3 class="text-stone-500 text-xs font-bold uppercase tracking-wider mb-2">Total AI Tools
                             </h3>
-                            <div class="text-4xl font-cyber text-white mb-2" id="stat-total">--</div>
+                            <div class="text-4xl font-cyber text-stone-900 mb-2" id="stat-total">--</div>
                             <div
-                                class="text-xs text-blue-400 flex items-center group-hover:translate-x-1 transition-transform">
+                                class="text-xs text-earth-600 flex items-center group-hover:translate-x-1 transition-transform">
                                 View Registry →</div>
                         </div>
 
@@ -309,33 +268,33 @@
                         <div id="card-licensed" onclick="showStatDetails('licensed')"
                             class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden opacity-70 hover:opacity-100 hover:scale-[1.02] transition-all">
                             <div
-                                class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/20 rounded-full blur-2xl group-hover:bg-green-500/30 transition-all">
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-earth-600/10 rounded-full blur-2xl group-hover:bg-earth-600/20 transition-all">
                             </div>
-                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Licensed</h3>
-                            <div class="text-4xl font-cyber text-white mb-2" id="stat-licensed">--</div>
-                            <div class="text-xs text-green-400">Compliant Usage</div>
+                            <h3 class="text-stone-500 text-xs font-bold uppercase tracking-wider mb-2">Licensed</h3>
+                            <div class="text-4xl font-cyber text-stone-900 mb-2" id="stat-licensed">--</div>
+                            <div class="text-xs text-earth-600">Compliant Usage</div>
                         </div>
 
                         <!-- Shadow -->
                         <div id="card-shadow" onclick="showStatDetails('shadow')"
                             class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden opacity-70 hover:opacity-100 hover:scale-[1.02] transition-all">
                             <div
-                                class="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/20 rounded-full blur-2xl group-hover:bg-orange-500/30 transition-all">
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-stone-500/10 rounded-full blur-2xl group-hover:bg-stone-500/20 transition-all">
                             </div>
-                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Shadow AI</h3>
-                            <div class="text-4xl font-cyber text-white mb-2" id="stat-shadow">--</div>
-                            <div class="text-xs text-orange-400">Requires Review</div>
+                            <h3 class="text-stone-500 text-xs font-bold uppercase tracking-wider mb-2">Shadow AI</h3>
+                            <div class="text-4xl font-cyber text-stone-900 mb-2" id="stat-shadow">--</div>
+                            <div class="text-xs text-stone-500">Requires Review</div>
                         </div>
 
                         <!-- Users -->
                         <div id="card-users" onclick="showStatDetails('users')"
                             class="stat-card glass-panel p-6 rounded-2xl cursor-pointer group relative overflow-hidden opacity-70 hover:opacity-100 hover:scale-[1.02] transition-all">
                             <div
-                                class="absolute -right-6 -top-6 w-24 h-24 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-all">
+                                class="absolute -right-6 -top-6 w-24 h-24 bg-stone-600/10 rounded-full blur-2xl group-hover:bg-stone-600/20 transition-all">
                             </div>
-                            <h3 class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Active Users</h3>
-                            <div class="text-4xl font-cyber text-white mb-2" id="stat-users">--</div>
-                            <div class="text-xs text-purple-400">High Velocity</div>
+                            <h3 class="text-stone-500 text-xs font-bold uppercase tracking-wider mb-2">Active Users</h3>
+                            <div class="text-4xl font-cyber text-stone-900 mb-2" id="stat-users">--</div>
+                            <div class="text-xs text-stone-600">High Velocity</div>
                         </div>
                     </div>
 
@@ -345,7 +304,7 @@
                         <!-- CHARTS -->
                         <div class="lg:col-span-2 glass-panel rounded-2xl p-6">
                             <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                     <span class="w-1 h-6 bg-blue-500 rounded-full"></span>
                                     Traffic Analytics
                                 </h2>
@@ -364,7 +323,7 @@
                         <!-- FEED -->
                         <div class="glass-panel rounded-2xl p-6 flex flex-col h-[400px]">
                             <div class="flex items-center justify-between mb-6">
-                                <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                                <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                     <span class="relative flex h-3 w-3">
                                         <span
                                             class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -381,8 +340,8 @@
 
                     <!-- TABLE -->
                     <div id="table-section" class="glass-panel rounded-2xl overflow-hidden">
-                        <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                            <h2 class="text-lg font-bold text-slate-800 flex items-center gap-2">
                                 <span class="w-1 h-6 bg-purple-500 rounded-full"></span>
                                 Registry Database
                             </h2>
@@ -390,7 +349,8 @@
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-sm text-left">
-                                <thead class="bg-white/5 text-slate-400 uppercase text-xs font-semibold tracking-wider">
+                                <thead
+                                    class="bg-slate-50/80 text-slate-500 uppercase text-xs font-semibold tracking-wider">
                                     <tr>
                                         <th class="px-6 py-4">Tool Identity</th>
                                         <th class="px-6 py-4">Vendor</th>
@@ -399,7 +359,7 @@
                                         <th class="px-6 py-4 text-right">Users</th>
                                     </tr>
                                 </thead>
-                                <tbody id="toolsTable" class="divide-y divide-white/5">
+                                <tbody id="toolsTable" class="divide-y divide-slate-100">
                                     <!-- JS Injection -->
                                 </tbody>
                             </table>
@@ -407,15 +367,89 @@
                     </div>
                 </div> <!-- End Dashboard View -->
 
+                <!-- REGISTRY VIEW (NEW) -->
+                <div id="registry-view" class="hidden space-y-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-cyber text-slate-900">Tool Registry</h2>
+                            <p class="text-slate-500 text-sm">Comprehensive list of all utilized AI agents and tools.
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <div class="bg-white border border-slate-200 rounded-lg px-3 py-1 flex items-center gap-2">
+                                <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                <span class="text-xs font-bold text-slate-700" id="registry-count">-- Active
+                                    Tools</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CARD GRID CONTAINER -->
+                    <div id="registry-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                        <!-- Content Injected via JS -->
+                    </div>
+                </div>
+
+                <!-- AGENT VIEW (NEW) -->
+                <div id="agent-view" class="hidden h-full flex flex-col">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-2xl font-cyber text-slate-900">Sentience Agent</h2>
+                            <p class="text-stone-500 text-sm">Autonomous security analyst powered by Gemini.</p>
+                        </div>
+                    </div>
+
+                    <!-- Chat Container -->
+                    <div class="flex-1 glass-panel rounded-2xl flex flex-col overflow-hidden border border-stone-200">
+                        <!-- Messages Area -->
+                        <div id="agent-messages" class="flex-1 overflow-y-auto p-6 space-y-4 bg-stone-50/50">
+                            <!-- Helper Message -->
+                            <div class="flex gap-4">
+                                <div
+                                    class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center shrink-0 shadow-md">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                </div>
+                                <div
+                                    class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-stone-100 max-w-[80%]">
+                                    <p class="text-sm text-stone-700">Hello, Administrator. I am Sentience. I have
+                                        access to your live dashboard telemetry. How can I assist with your governance
+                                        tasks today?</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Input Area -->
+                        <div class="p-4 bg-white border-t border-stone-200">
+                            <form onsubmit="handleAgentSubmit(event)" class="relative">
+                                <input type="text" id="agentInput"
+                                    class="w-full bg-stone-50 border border-stone-300 rounded-xl py-3 pl-4 pr-12 text-sm text-stone-800 focus:outline-none focus:border-earth-600 focus:ring-1 focus:ring-earth-600/20 transition-all font-medium"
+                                    placeholder="Ask about risk, tool usage, or compliance status..."
+                                    autocomplete="off">
+                                <button type="submit"
+                                    class="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-stone-800 hover:bg-earth-600 text-white rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ANALYTICS VIEW -->
                 <div id="analytics-view" class="hidden space-y-8">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-2xl font-cyber text-white">Intelligence Command Center</h2>
-                            <p class="text-slate-400 text-sm">Deep dive telemetry analysis and behavioral trends.</p>
+                            <h2 class="text-2xl font-cyber text-slate-900">Intelligence Command Center</h2>
+                            <p class="text-slate-500 text-sm">Deep dive telemetry analysis and behavioral trends.</p>
                         </div>
                         <button onclick="switchView('dashboard')"
-                            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors">
+                            class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-600 rounded-lg text-sm transition-colors border border-slate-200 shadow-sm">
                             Back to Dashboard
                         </button>
                     </div>
@@ -424,7 +458,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <!-- Usage Trends -->
                         <div class="md:col-span-2 glass-panel p-6 rounded-2xl">
-                            <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -439,7 +473,7 @@
 
                         <!-- Risk Profile -->
                         <div class="glass-panel p-6 rounded-2xl">
-                            <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                            <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                                 <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -456,13 +490,13 @@
                     <!-- Row 2: Top Users & Categories -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="glass-panel p-6 rounded-2xl">
-                            <h3 class="text-lg font-bold text-white mb-6">Top Active Users</h3>
+                            <h3 class="text-lg font-bold text-slate-800 mb-6">Top Active Users</h3>
                             <div class="h-64">
                                 <canvas id="usersChart"></canvas>
                             </div>
                         </div>
                         <div class="glass-panel p-6 rounded-2xl">
-                            <h3 class="text-lg font-bold text-white mb-6">Tool Distribution</h3>
+                            <h3 class="text-lg font-bold text-slate-800 mb-6">Tool Distribution</h3>
                             <div class="h-64">
                                 <canvas id="categoryChartFull"></canvas>
                             </div>
@@ -475,18 +509,18 @@
 
                     <div class="flex items-center justify-between">
                         <div>
-                            <h2 class="text-2xl font-cyber text-white">System Configuration</h2>
-                            <p class="text-slate-400 text-sm">Manage environment parameters and local preferences.</p>
+                            <h2 class="text-2xl font-cyber text-slate-900">System Configuration</h2>
+                            <p class="text-slate-500 text-sm">Manage environment parameters and local preferences.</p>
                         </div>
                         <button onclick="switchView('dashboard')"
-                            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors">
+                            class="px-4 py-2 bg-white hover:bg-slate-50 text-slate-600 rounded-lg text-sm transition-colors border border-slate-200 shadow-sm">
                             Back to Dashboard
                         </button>
                     </div>
 
                     <!-- Appearance -->
                     <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
@@ -496,7 +530,7 @@
                         <div class="space-y-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <div class="text-white font-medium">Ambient Orbs</div>
+                                    <div class="text-slate-900 font-medium">Ambient Orbs</div>
                                     <div class="text-xs text-slate-500">Render background energy fields</div>
                                 </div>
                                 <button onclick="toggleOrbs(this)"
@@ -508,7 +542,7 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <div class="text-white font-medium">Glass Blur Quality</div>
+                                    <div class="text-slate-900 font-medium">Glass Blur Quality</div>
                                     <div class="text-xs text-slate-500">High performance backdrop filters</div>
                                 </div>
                                 <button class="w-12 h-6 rounded-full bg-blue-600 relative opacity-50 cursor-not-allowed"
@@ -521,7 +555,7 @@
 
                     <!-- Notifications -->
                     <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                             <svg class="w-5 h-5 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -531,7 +565,7 @@
                         <div class="space-y-6">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <div class="text-white font-medium">Usage Spikes</div>
+                                    <div class="text-slate-900 font-medium">Usage Spikes</div>
                                     <div class="text-xs text-slate-500">Notify when new User > 50</div>
                                 </div>
                                 <button onclick="toggleBtn(this)"
@@ -543,7 +577,7 @@
                             </div>
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <div class="text-white font-medium">Shadow AI Detection</div>
+                                    <div class="text-slate-900 font-medium">Shadow AI Detection</div>
                                     <div class="text-xs text-slate-500">Instant alert on unauthorized tool access</div>
                                 </div>
                                 <button onclick="toggleBtn(this)"
@@ -558,7 +592,7 @@
 
                     <!-- Profile -->
                     <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
                             <svg class="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -569,18 +603,18 @@
                             <div class="space-y-2">
                                 <label class="text-xs text-slate-500 uppercase font-bold">Role</label>
                                 <input type="text" value="Security Engineer" readonly
-                                    class="w-full bg-black/20 border border-white/5 rounded-lg px-4 py-2 text-slate-300 font-mono text-sm">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-slate-700 font-mono text-sm shadow-sm">
                             </div>
                             <div class="space-y-2">
                                 <label class="text-xs text-slate-500 uppercase font-bold">Clearance Level</label>
                                 <input type="text" value="L5 - ROOT ACCESS" readonly
-                                    class="w-full bg-black/20 border border-white/5 rounded-lg px-4 py-2 text-orange-400 font-mono text-sm border-orange-500/20">
+                                    class="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-orange-600 font-mono text-sm border-orange-500/20 shadow-sm">
                             </div>
                             <div class="col-span-2 space-y-2">
                                 <label class="text-xs text-slate-500 uppercase font-bold">API Access Token</label>
                                 <div class="flex gap-2">
                                     <input type="password" value="sk-live-92839120391203" readonly
-                                        class="flex-1 bg-black/20 border border-white/5 rounded-lg px-4 py-2 text-slate-300 font-mono text-sm">
+                                        class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-slate-700 font-mono text-sm shadow-sm">
                                     <button
                                         class="px-4 py-2 bg-blue-600/20 text-blue-400 hover:bg-blue-600/30 rounded-lg text-xs font-bold uppercase transition-colors">Regenerate</button>
                                 </div>
@@ -595,21 +629,21 @@
 
     <!-- Tool Details Modal -->
     <div id="modalOverlay"
-        class="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] hidden flex items-center justify-center transition-all opacity-0">
-        <div class="glass-panel w-full max-w-lg rounded-2xl p-8 m-4 shadow-[0_0_50px_rgba(0,0,0,0.5)] transform scale-95 transition-all duration-300 border border-white/10"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-[60] hidden flex items-center justify-center transition-all opacity-0">
+        <div class="glass-panel w-full max-w-lg rounded-2xl p-8 m-4 shadow-[0_0_50px_rgba(0,0,0,0.1)] transform scale-95 transition-all duration-300 border border-white/40"
             id="modalContent">
 
             <div class="flex justify-between items-start mb-8">
                 <div>
-                    <h2 class="text-3xl font-cyber text-white mb-1" id="modalTitle">--</h2>
+                    <h2 class="text-3xl font-cyber text-slate-800 mb-1" id="modalTitle">--</h2>
                     <div class="flex items-center gap-2">
                         <span
-                            class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-400 border border-slate-700 font-mono"
+                            class="px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-500 border border-slate-200 font-mono"
                             id="modalId">ID: --</span>
                     </div>
                 </div>
                 <button onclick="closeModal()"
-                    class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -618,13 +652,13 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
                     <div class="text-xs text-slate-500 uppercase mb-1">Status</div>
                     <div id="modalStatus" class="font-medium">--</div>
                 </div>
-                <div class="p-4 rounded-xl bg-slate-900/50 border border-white/5">
+                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
                     <div class="text-xs text-slate-500 uppercase mb-1">Total Events</div>
-                    <div id="modalEvents" class="text-xl font-mono text-white">--</div>
+                    <div id="modalEvents" class="text-xl font-mono text-slate-800">--</div>
                 </div>
             </div>
 
@@ -654,7 +688,7 @@
 
     <!-- Toast Notification -->
     <div id="toast"
-        class="fixed bottom-8 right-8 bg-slate-900/90 backdrop-blur border border-green-500/30 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-24 transition-transform duration-500 flex items-center gap-4 z-[70]">
+        class="fixed bottom-8 right-8 bg-white/90 backdrop-blur border border-green-500/30 text-slate-800 px-6 py-4 rounded-xl shadow-2xl transform translate-y-24 transition-transform duration-500 flex items-center gap-4 z-[70]">
         <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
         <div>
             <h4 class="font-bold text-sm">Report Generated</h4>
@@ -745,22 +779,141 @@
         function switchView(viewName) {
             const dashboard = document.getElementById('dashboard-view');
             const settings = document.getElementById('settings-view');
-            const navDash = document.querySelector('a[href="#"]'); // Quick hack for dash link
+            const analytics = document.getElementById('analytics-view');
+            const registry = document.getElementById('registry-view');
+            const agent = document.getElementById('agent-view');
+
+            const navDash = document.querySelector('a[href=\"#\"]');
             const navSettings = document.getElementById('nav-settings');
+            const navAnalytics = document.querySelector('a[href=\"#analytics\"]');
+            const navRegistry = document.getElementById('nav-registry');
+            const navAgent = document.getElementById('nav-agent');
+
+            // Reset all
+            [dashboard, settings, analytics, registry, agent].forEach(v => v && v.classList.add('hidden'));
+
+            // Reset Nav
+            [navDash, navSettings, navAnalytics, navRegistry, navAgent].forEach(nav => {
+                if (nav) {
+                    nav.classList.remove('bg-stone-100', 'text-earth-600', 'border', 'border-stone-200');
+                    nav.classList.add('text-stone-500', 'hover:bg-stone-50');
+                }
+            });
+
+            const setActive = (nav) => {
+                nav.classList.remove('text-stone-500', 'hover:bg-stone-50');
+                nav.classList.add('bg-stone-100', 'text-earth-600', 'border', 'border-stone-200');
+            };
 
             if (viewName === 'settings') {
-                dashboard.classList.add('hidden');
                 settings.classList.remove('hidden');
-
-                navSettings.classList.add('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-                navSettings.classList.remove('text-slate-400', 'hover:bg-white/5');
+                setActive(navSettings);
+            } else if (viewName === 'analytics') {
+                analytics.classList.remove('hidden');
+                if (navAnalytics) setActive(navAnalytics);
+            } else if (viewName === 'registry') {
+                registry.classList.remove('hidden');
+                if (navRegistry) setActive(navRegistry);
+            } else if (viewName === 'agent') {
+                agent.classList.remove('hidden');
+                if (navAgent) setActive(navAgent);
             } else {
                 dashboard.classList.remove('hidden');
-                settings.classList.add('hidden');
-
-                navSettings.classList.remove('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-                navSettings.classList.add('text-slate-400', 'hover:bg-white/5');
+                setActive(navDash);
             }
+        }
+
+        // --- AGENT LOGIC ---
+        async function handleAgentSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('agentInput');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const messages = document.getElementById('agent-messages');
+
+            // User Message
+            messages.innerHTML += `
+                <div class="flex gap-4 justify-end">
+                    <div class="bg-earth-600 text-white p-4 rounded-2xl rounded-tr-none shadow-sm max-w-[80%]">
+                        <p class="text-sm">${msg}</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-stone-300 flex items-center justify-center shrink-0">
+                        <svg class="w-5 h-5 text-stone-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                </div>
+            `;
+
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+
+            // Loading State
+            const loadingId = 'loading-' + Date.now();
+            messages.innerHTML += `
+                <div id="${loadingId}" class="flex gap-4">
+                    <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center shrink-0 shadow-md">
+                        <svg class="w-6 h-6 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-stone-100 max-w-[80%]">
+                        <div class="flex space-x-2">
+                            <div class="w-2 h-2 bg-stone-400 rounded-full animate-bounce"></div>
+                            <div class="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-2 h-2 bg-stone-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                const res = await fetch(`${API_URL}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await res.json();
+
+                // Remove loading
+                document.getElementById(loadingId).remove();
+
+                // Agent Response (supporting basic parsing)
+                // Use a simple formatter for **bold** and \n per line
+                const formatted = data.response
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>');
+
+                messages.innerHTML += `
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-stone-800 flex items-center justify-center shrink-0 shadow-md">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-stone-100 max-w-[80%]">
+                            <p class="text-sm text-stone-700 leading-relaxed">${formatted}</p>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                messages.innerHTML += `
+                    <div class="flex gap-4">
+                        <div class="w-10 h-10 rounded-lg bg-red-600 flex items-center justify-center shrink-0 shadow-md">
+                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div class="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-red-100 max-w-[80%]">
+                            <p class="text-sm text-red-600">Connection Error: ${err.message}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            messages.scrollTop = messages.scrollHeight;
         }
 
         function toggleOrbs(btn) {
@@ -832,8 +985,9 @@
                     labels: ['Licensed', 'Shadow AI'],
                     datasets: [{
                         data: [1, 1], // Placeholder
-                        backgroundColor: ['#22c55e', '#f97316'],
-                        borderWidth: 0,
+                        backgroundColor: ['#855C42', '#D6D3C8'], // Earth-600, Stone-300
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
                         hoverOffset: 10
                     }]
                 },
@@ -842,7 +996,7 @@
                     maintainAspectRatio: false,
                     cutout: '75%',
                     plugins: {
-                        legend: { position: 'right', labels: { boxWidth: 8, color: '#94a3b8' } }
+                        legend: { position: 'right', labels: { boxWidth: 8, color: '#44403C' } }
                     },
                     onClick: (e, elements) => {
                         if (elements.length > 0) {
@@ -859,8 +1013,8 @@
             const ctx2 = document.getElementById('categoryChart').getContext('2d');
             charts.category = new Chart(ctx2, {
                 type: 'bar',
-                data: { labels: [], datasets: [{ label: 'Users', data: [], backgroundColor: '#3b82f6', borderRadius: 4, maxBarThickness: 30 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+                data: { labels: [], datasets: [{ label: 'Users', data: [], backgroundColor: '#704B35', borderRadius: 4, maxBarThickness: 30 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(68, 64, 60, 0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
             });
 
             // --- ANALYTICS VIEW CHARTS ---
@@ -870,7 +1024,7 @@
             charts.trends = new Chart(ctx3, {
                 type: 'line',
                 data: { labels: [], datasets: [{ label: 'Requests/Hr', data: [], borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
             });
 
             // 2. Risk (Radar)
@@ -883,7 +1037,7 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    scales: { r: { angleLines: { color: 'rgba(255,255,255,0.1)' }, grid: { color: 'rgba(255,255,255,0.1)' }, pointLabels: { color: '#94a3b8' } } },
+                    scales: { r: { angleLines: { color: 'rgba(0,0,0,0.05)' }, grid: { color: 'rgba(0,0,0,0.05)' }, pointLabels: { color: '#64748b' } } },
                     plugins: { legend: { display: false } }
                 }
             });
@@ -894,7 +1048,7 @@
                 type: 'bar',
                 indexAxis: 'y',
                 data: { labels: [], datasets: [{ label: 'Events', data: [], backgroundColor: '#a855f7', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { grid: { color: 'rgba(0,0,0,0.05)' } }, y: { grid: { display: false } } }, plugins: { legend: { display: false } } }
             });
 
             // 4. Category Full (Clone for Analytics Page)
@@ -902,7 +1056,7 @@
             charts.categoryFull = new Chart(ctx6, {
                 type: 'bar',
                 data: { labels: [], datasets: [{ label: 'Users', data: [], backgroundColor: '#3b82f6', borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } }, plugins: { legend: { display: false } } }
             });
         }
 
@@ -937,8 +1091,9 @@
                 charts.categoryFull.data.datasets[0].data = Object.values(categories);
                 charts.categoryFull.update();
 
-                // 4. Update Table
+                // 4. Update Table & Registry
                 renderTable();
+                renderRegistryGrid(); // New Card Grid
 
                 // 5. Fetch & Update Advanced Analytics (Trends, Risk, Users)
                 updateAdvancedAnalytics();
@@ -946,6 +1101,51 @@
             } catch (e) {
                 console.error("Sync Error", e);
             }
+        }
+
+        function renderRegistryGrid() {
+            const grid = document.getElementById('registry-grid');
+            if (!grid) return;
+
+            document.getElementById('registry-count').innerText = `${cachedTools.length} Active Tools`;
+
+            grid.innerHTML = cachedTools.map(t => {
+                // Generate Initials
+                const initials = t.name ? t.name.substring(0, 2).toUpperCase() : t.tool_id.substring(0, 2).toUpperCase();
+                // Pick color based on first char code (Earth Tones)
+                const colors = [
+                    'bg-stone-600', 'bg-stone-500', 'bg-earth-600', 'bg-earth-700', 'bg-stone-700', 'bg-stone-800'
+                ];
+                const colorClass = colors[initials.charCodeAt(0) % colors.length];
+
+                return `
+                <div onclick="openToolModal('${t.tool_id}')" 
+                     class="glass-panel p-4 rounded-xl flex items-center justify-between hover:shadow-md hover:border-earth-600/30 transition-all cursor-pointer group bg-white border border-stone-200">
+                    
+                    <div class="flex items-center gap-4">
+                        <!-- Icon Placeholder -->
+                        <div class="w-12 h-12 rounded-lg ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-md">
+                            ${initials}
+                        </div>
+                        
+                        <!-- Info -->
+                        <div>
+                            <div class="font-bold text-stone-800 text-sm group-hover:text-earth-600 transition-colors">${t.name || t.tool_id}</div>
+                            <div class="text-xs text-stone-500">${t.vendor || 'Unknown Vendor'}</div>
+                        </div>
+                    </div>
+
+                    <!-- Stats -->
+                    <div class="text-right">
+                        <div class="font-bold text-stone-800 text-sm">${t.users} users</div>
+                        ${t.licensed ?
+                        '<div class="text-[10px] text-earth-600 font-medium">$3.8K/mo</div>' :
+                        '<div class="text-[10px] text-stone-400 font-medium">$760/mo</div>'
+                    } 
+                    </div>
+                </div>
+                `;
+            }).join('');
         }
 
         async function updateAdvancedAnalytics() {
@@ -997,31 +1197,31 @@
 
             const tbody = document.getElementById('toolsTable');
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-500 font-mono text-xs uppercase tracking-widest">No signals detected</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-stone-500 font-mono text-xs uppercase tracking-widest">No signals detected</td></tr>`;
             } else {
                 tbody.innerHTML = filtered.map((t, idx) => `
-                    <tr onclick="openToolModal('${t.tool_id}')" class="group hover:bg-white/5 cursor-pointer transition-colors border-b border-white/5 last:border-0">
+                    <tr onclick="openToolModal('${t.tool_id}')" class="group hover:bg-stone-50 cursor-pointer transition-colors border-b border-stone-100 last:border-0">
                         <td class="px-6 py-4">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-lg flex items-center justify-center ${t.licensed ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-orange-500/10 text-orange-400 border border-orange-500/20'}">
+                                <div class="w-10 h-10 rounded-lg flex items-center justify-center ${t.licensed ? 'bg-earth-600/10 text-earth-600 border border-earth-600/20' : 'bg-stone-200 text-stone-600 border border-stone-300'}">
                                     ${t.licensed ?
                         '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' :
                         '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856"/></svg>'}
                                 </div>
                                 <div>
-                                    <div class="font-bold text-white group-hover:text-blue-400 transition-colors">${t.name || t.tool_id}</div>
-                                    <div class="text-[10px] text-slate-500 uppercase tracking-wider">${t.tool_id}</div>
+                                    <div class="font-bold text-stone-700 group-hover:text-earth-600 transition-colors">${t.name || t.tool_id}</div>
+                                    <div class="text-[10px] text-stone-400 uppercase tracking-wider">${t.tool_id}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-slate-400">${t.vendor || 'Unknown'}</td>
-                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] bg-slate-800 text-slate-300 border border-slate-700 font-mono uppercase">${t.category || 'General'}</span></td>
+                        <td class="px-6 py-4 text-stone-500">${t.vendor || 'Unknown'}</td>
+                        <td class="px-6 py-4"><span class="px-2 py-1 rounded text-[10px] bg-stone-100 text-stone-500 border border-stone-200 font-mono uppercase">${t.category || 'General'}</span></td>
                         <td class="px-6 py-4 text-center">
                             ${t.licensed ?
-                        '<span class="text-[10px] font-bold text-green-400 bg-green-500/10 px-2 py-1 rounded-full border border-green-500/20 uppercase tracking-wide">Approved</span>' :
-                        '<span class="text-[10px] font-bold text-orange-400 bg-orange-500/10 px-2 py-1 rounded-full border border-orange-500/20 uppercase tracking-wide">Review</span>'}
+                        '<span class="text-[10px] font-bold text-earth-600 bg-earth-600/10 px-2 py-1 rounded-full border border-earth-600/20 uppercase tracking-wide">Approved</span>' :
+                        '<span class="text-[10px] font-bold text-stone-600 bg-stone-200 px-2 py-1 rounded-full border border-stone-300 uppercase tracking-wide">Review</span>'}
                         </td>
-                        <td class="px-6 py-4 text-right font-mono text-slate-300">${t.users}</td>
+                        <td class="px-6 py-4 text-right font-mono text-stone-600">${t.users}</td>
                     </tr>
                 `).join('');
             }
@@ -1035,16 +1235,16 @@
 
                 const feed = document.getElementById('activityFeed');
                 feed.innerHTML = events.map(e => `
-                    <div onclick="openToolModal('${e.tool_id}')" class="flex items-start gap-4 p-3 rounded-xl bg-slate-800/30 hover:bg-slate-700/50 cursor-pointer transition-all border border-white/5 hover:border-blue-500/30 group">
+                    <div onclick="openToolModal('${e.tool_id}')" class="flex items-start gap-4 p-3 rounded-xl bg-white/50 hover:bg-white cursor-pointer transition-all border border-stone-100 hover:border-earth-200 group shadow-sm">
                         <div class="mt-1 relative">
-                            <span class="block w-2 h-2 rounded-full ${e.licensed ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-orange-500 shadow-[0_0_8px_#f97316]'}"></span>
+                            <span class="block w-2 h-2 rounded-full ${e.licensed ? 'bg-earth-600 shadow-[0_0_8px_#855C42]' : 'bg-stone-400 shadow-[0_0_8px_#a8a29e]'}"></span>
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="flex justify-between items-start">
-                                <p class="text-sm font-bold text-slate-200 group-hover:text-blue-400 truncate transition-colors">${e.tool_id}</p>
-                                <span class="text-[10px] font-mono text-slate-500">${new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+                                <p class="text-sm font-bold text-stone-700 group-hover:text-earth-600 truncate transition-colors">${e.tool_id}</p>
+                                <span class="text-[10px] font-mono text-stone-400">${new Date(e.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
                             </div>
-                            <p class="text-xs text-slate-500 truncate mt-0.5">User: <span class="text-slate-400 font-mono">${e.user_id}</span></p>
+                            <p class="text-xs text-stone-500 truncate mt-0.5">User: <span class="text-stone-600 font-mono">${e.user_id}</span></p>
                         </div>
                     </div>
                 `).join('');
@@ -1106,48 +1306,6 @@
             if (e.key === 'Escape') closeModal();
         });
 
-        // --- MANAGE VIEWS (OVERRIDE) ---
-        function switchView(viewName) {
-            const dashboard = document.getElementById('dashboard-view');
-            const settings = document.getElementById('settings-view');
-            const analytics = document.getElementById('analytics-view');
-
-            const navDash = document.querySelector('a[href="#"]');
-            const navSettings = document.getElementById('nav-settings');
-            const navAnalytics = document.querySelector('a[href="#analytics"]');
-
-            // Reset all
-            dashboard.classList.add('hidden');
-            settings.classList.add('hidden');
-            analytics.classList.add('hidden');
-
-            navDash.classList.remove('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-            navDash.classList.add('text-slate-400', 'hover:bg-white/5');
-
-            navSettings.classList.remove('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-            navSettings.classList.add('text-slate-400', 'hover:bg-white/5');
-
-            if (navAnalytics) {
-                navAnalytics.classList.remove('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-                navAnalytics.classList.add('text-slate-400', 'hover:bg-white/5');
-            }
-
-            if (viewName === 'settings') {
-                settings.classList.remove('hidden');
-                navSettings.classList.add('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-                navSettings.classList.remove('text-slate-400', 'hover:bg-white/5');
-            } else if (viewName === 'analytics') {
-                analytics.classList.remove('hidden');
-                if (navAnalytics) {
-                    navAnalytics.classList.add('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-                    navAnalytics.classList.remove('text-slate-400', 'hover:bg-white/5');
-                }
-            } else {
-                dashboard.classList.remove('hidden');
-                navDash.classList.add('bg-blue-500/10', 'text-blue-400', 'border', 'border-blue-500/20');
-                navDash.classList.remove('text-slate-400', 'hover:bg-white/5');
-            }
-        }
 
     </script>
 </body>

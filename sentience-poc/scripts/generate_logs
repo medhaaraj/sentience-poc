@@ -106,9 +106,15 @@ def generate_logs(num_entries=200, output_file="telemetry/swg_logs.jsonl"):
     # Generate logs distributed over time
     for i in range(num_entries):
         # Random timestamp within 7-day window
-        timestamp = start_time + timedelta(
-            seconds=random.randint(0, 7 * 24 * 60 * 60)
-        )
+        # Update: Weight 50% of traffic to the last 24h for "24h Velocity" chart
+        if i < num_entries // 2:
+            # Older logs (7 days to 24h ago)
+            seconds_ago = random.randint(24 * 60 * 60, 7 * 24 * 60 * 60)
+        else:
+            # Recent logs (last 24h)
+            seconds_ago = random.randint(0, 24 * 60 * 60)
+            
+        timestamp = datetime.utcnow() - timedelta(seconds=seconds_ago)
         logs.append(generate_log_entry(timestamp))
     
     # Sort by timestamp (realistic log order)
@@ -136,5 +142,6 @@ def generate_logs(num_entries=200, output_file="telemetry/swg_logs.jsonl"):
 if __name__ == "__main__":
     # Generate 200 logs by default
     # Can be customized: generate_logs(500) for more data
-    generate_logs(200)
+    # Generate 500 logs for demo
+    generate_logs(500)
     print("✨ Log generation complete!")

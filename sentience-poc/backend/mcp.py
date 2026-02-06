@@ -129,3 +129,34 @@ def get_tool_details(cursor, tool_id: str):
         "last_seen": stats[2].isoformat() if stats and stats[2] else None,
         "total_events": stats[3] if stats else 0
     }
+
+
+def list_recent_logs(cursor, limit: int = 50):
+    """
+    List recent raw telemetry logs
+    
+    Args:
+        cursor: PostgreSQL cursor
+        limit: Max records to return
+        
+    Returns:
+        list: Recent event dictionaries
+    """
+    cursor.execute("""
+        SELECT timestamp, user_id, tool_id, licensed, explanation
+        FROM ai_usage_events
+        ORDER BY timestamp DESC
+        LIMIT %s
+    """, (limit,))
+    
+    events = []
+    for row in cursor.fetchall():
+        events.append({
+            "timestamp": row[0].isoformat() if row[0] else None,
+            "user_id": row[1],
+            "tool_id": row[2],
+            "licensed": row[3],
+            "explanation": row[4]
+        })
+    
+    return events

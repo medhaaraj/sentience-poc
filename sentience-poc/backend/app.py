@@ -6,8 +6,33 @@ from typing import List
 from db import get_connection
 from detection import detect_tool
 from aggregation import aggregate_usage
-from mcp import list_tools, get_tool_details
+from mcp import list_tools, get_tool_details, list_recent_logs, list_recent_logs
+from mcp import list_tools, get_tool_details, list_recent_logs
+# ... (rest of imports are fine, I will just update the import line first)
+
+# Actually I'll do this in two chunks if needed, or just update the import and add the route at the end of the file or near other mcp routes.
+
+# Strategy: Update line 9 to include list_recent_logs
+# Then add the route after mcp_tool_detail.
 from models import TelemetryEvent
+import requests
+from openai import OpenAI
+import os
+import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+try:
+    import google.generativeai as genai
+except ImportError:
+    genai = None
+
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    message: str
 
 # Initialize FastAPI application
 app = FastAPI(
@@ -32,6 +57,117 @@ def get_db_conn():
         yield conn
     finally:
         conn.close()
+
+# -------------------------
+# AI AGENT ENDPOINT
+# -------------------------
+@app.post("/api/chat")
+def chat_agent(request: ChatRequest, conn = Depends(get_db_conn)):
+    """
+    Generate response using Gemini with system context
+    """
+    api_key = os.environ.get("GEMINI_API_KEY")
+    
+    # Context Gathering
+    cur = conn.cursor()
+    
+    # 1. Stats
+    cur.execute("SELECT COUNT(*) FROM tools")
+    total_tools = cur.fetchone()[0]
+    
+    cur.execute("SELECT COUNT(*) FROM tools WHERE licensed = FALSE")
+    shadow_tools = cur.fetchone()[0]
+    
+    # 2. Key Risks (Shadow tools with high users)
+    # Fix: Join with ai_usage_events to count users, as 'users' column doesn't exist in tools table
+    cur.execute("""
+        SELECT t.tool_id, COUNT(DISTINCT e.user_id) as user_count
+        FROM tools t
+        JOIN ai_usage_events e ON t.tool_id = e.tool_id
+        WHERE t.licensed = FALSE 
+        GROUP BY t.tool_id
+        ORDER BY user_count DESC 
+        LIMIT 5
+    """)
+    risky_tools = cur.fetchall()
+
+    # 3. Full Registry (Limit 100 for context window safety)
+    # Fix: Join with ai_usage_events to count users
+    cur.execute("""
+        SELECT t.tool_id, t.vendor, t.category, t.licensed, COUNT(DISTINCT e.user_id) as user_count
+        FROM tools t
+        LEFT JOIN ai_usage_events e ON t.tool_id = e.tool_id
+        GROUP BY t.tool_id, t.vendor, t.category, t.licensed
+        ORDER BY user_count DESC 
+        LIMIT 100
+    """)
+    all_tools = cur.fetchall()
+    
+    cur.close()
+
+    # Format Data for LLM
+    registry_text = []
+    for t in all_tools:
+        status = "Approved" if t[3] else "Shadow/Unapproved"
+        registry_text.append(f"- {t[0]} (Vendor: {t[1]}, Category: {t[2]}, Status: {status}, Users: {t[4]})")
+    registry_str = "\n".join(registry_text)
+
+    context_str = f"""
+    SYSTEM OVERVIEW:
+    - Total Tools: {total_tools}
+    - Shadow Tools: {shadow_tools}
+    - Top Risks (Unapproved High Usage): {', '.join([f'{t[0]} ({t[1]} users)' for t in risky_tools])}
+
+    FULL TOOL REGISTRY DATA:
+    {registry_str}
+    """
+
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    # ... (context building logic remains same, but let's just replace the block)
+
+    registry_text = []
+    # ... (I need to preserve the surrounding context logic if I don't replace it all)
+    # Actually, I'll just look at the lines 122-157 which contain the specific gemini constraints.
+
+    if not api_key:
+        return {
+            "response": "**System Notice**: OFFLINE MODE. Missing `OPENAI_API_KEY`."
+        }
+
+    try:
+        client = OpenAI(api_key=api_key)
+        
+        system_prompt = f"""
+        You are Sentience, an expert AI Security & Governance Agent.
+        
+        Your Mission: Assist the administrator by analyzing the provided live system data.
+        
+        LIVE DATA CONTEXT:
+        {context_str}
+        
+        GUIDELINES:
+        1. **Be Specific**: Use the data provided. If asked "How many tools?", count them from the list.
+        2. **Risk Focus**: Always highlight shadow/unapproved tools if relevant to the question.
+        3. **Tone**: Professional, precise, slightly futuristic.
+        4. **Format**: Use Markdown. Use Bold for tool names and numbers.
+        5. **Unknowns**: If the data isn't in the list, state that you don't have that visibility.
+        """
+        
+        completion = client.chat.completions.create(
+            model="gpt-4o",  # Or gpt-3.5-turbo if preferred, but user implies high capability
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": request.message}
+            ]
+        )
+        
+        return {"response": completion.choices[0].message.content}
+        
+    except Exception as e:
+        print(f"OpenAI Error: {e}")
+        return {"response": f"**API Error**: {str(e)}"}
+            
 
 # -------------------------
 # HEALTH CHECK
@@ -115,6 +251,18 @@ def mcp_tool_detail(tool_id: str, conn = Depends(get_db_conn)):
     cur = conn.cursor()
     try:
         return get_tool_details(cur, tool_id)
+    finally:
+        cur.close()
+
+
+@app.get("/mcp/logs")
+def mcp_logs(limit: int = 50, conn = Depends(get_db_conn)):
+    """
+    MCP Query: Get recent logs
+    """
+    cur = conn.cursor()
+    try:
+        return list_recent_logs(cur, limit)
     finally:
         cur.close()
 
@@ -289,3 +437,8 @@ def recent_events(limit: int = 50, conn = Depends(get_db_conn)):
         })
     
     return events
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
